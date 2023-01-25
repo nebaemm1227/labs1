@@ -1,0 +1,23 @@
+
+- hosts: 192.168.101.134, 192.168.101.137
+  become: yes
+
+  tasks:
+    - name: make a new user named kube
+      user: name=kube append=yes state=present createhome=yes shell=/bin/bash
+
+    - name: create a sudoers file
+      ansible.builtin.file:
+        path: /etc/sudoers.d/addedsudoers
+        state: touch
+
+    - name: give the new user privileges to run sudo without requiring a password
+      lineinfile:
+        dest: /etc/sudoers.d/addedsudoers
+        line: 'kube ALL=(ALL) NOPASSWD:ALL'
+        validate: 'visudo -cf %s'
+
+    - name: add authorized key for the new user
+      authorized_key: user=kube key="{{item}}"
+      with_file:
+        - ~/.ssh/id_rsa.pub

@@ -1,0 +1,11 @@
+- hosts: 192.168.101.134, 192.168.101.137
+  become: yes
+  tasks:
+  - name: install epel
+    yum:
+     name: epel-release
+     state: installed
+  - name: install nginx
+    yum:
+     name: nginx
+     state: installed 
